@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My first three.js app</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+  </style>
+</head>
+
+<body>
+  <script src="https://threejs.org/build/three.js"></script>
+  <script>
+    // scene
+    const scene = new THREE.Scene();
+
+    // camera
+    //使用透視相機(field of view=>(FOV=>視野),aspect ratio=>縱橫比,near plane,far plane=>距離相機比值更遠far或更近near的物件不會被渲染)
+    // const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1,1000);
+    const camera = new THREE.PerspectiveCamera(45,window.innerWidth / window.innerHeight,1,500);
+    camera.position.set(0,0,100);
+    camera.lookAt(0,0,0);
+
+    // renderer
+    const renderer = new THREE.WebGLRenderer();
+    // 渲染我們的應用程序的大小
+    // 還可以提供setSize較小的值，例如和，這將使應用程序以四分之一大小呈現。window.innerWidth/2window.innerHeight/2
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    //create a blue LineBasicMaterial
+    const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+
+    // 帶有一些頂點的幾何體：
+    const points = [];
+    points.push(new THREE.Vector3(- 10,0,0));
+    points.push(new THREE.Vector3(0,10,0));
+    points.push(new THREE.Vector3(10,0,0));
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    // 現在我們有了兩條線的點和一個材料我們可以將它們放在一起形成一條線
+    const line = new THREE.Line( geometry, material );
+    // 將它添加到場景中並調用render  // 渲染場景
+    scene.add( line );
+    renderer.render( scene, camera );
+  </script>
+</body>
+
+</html>

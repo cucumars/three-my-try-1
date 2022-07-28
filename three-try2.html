@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>My first three.js app</title>
+	<style>
+		body {
+			margin: 0;
+		}
+
+	</style>
+</head>
+
+<body>
+	<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+	<script type="importmap">
+		{
+			"imports": {
+				"three": "https://unpkg.com/three@0.132.2/build/three.module.js"
+			}
+		}
+	</script>
+	<script type="module">
+		import * as THREE from 'three';
+
+		const scene = new THREE.Scene();
+		//使用透視相機(field of view=>(FOV=>視野),aspect ratio=>縱橫比,near plane,far plane=>距離相機比值更遠far或更近near的物件不會被渲染)
+		const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1,1000);
+
+		const renderer = new THREE.WebGLRenderer();
+		// 渲染我們的應用程序的大小
+		renderer.setSize(window.innerWidth,window.innerHeight);
+		// 還可以提供setSize較小的值，例如和，這將使應用程序以四分之一大小呈現。window.innerWidth/2window.innerHeight/2
+		document.body.appendChild(renderer.domElement);
+
+		const geometry = new THREE.BoxGeometry(1,1,1);
+		const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+		const cube = new THREE.Mesh(geometry,material);
+		scene.add(cube);
+
+		camera.position.z = 5;
+		// 渲染場景
+		function animate() {
+			requestAnimationFrame(animate);
+
+			//增加變化
+			cube.rotation.x += 0.01;
+			cube.rotation.y += 0.01;
+
+			renderer.render(scene,camera);
+		}
+		animate();
+
+
+	</script>
+</body>
+
+</html>
