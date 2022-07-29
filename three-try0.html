@@ -31,21 +31,20 @@
 		const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 		const cube = new THREE.Mesh(geometry,material);
 		scene.add(cube);
-		
+
 
 		camera.position.z = 5;
-		// 渲染場景
-		function animate() {
-			// requestAnimationFrame是對瀏覽器的請求，您想要為某些內容設置動畫
-			requestAnimationFrame(animate);
+		function render(time) {
+			time *= 0.001;  // 將時間轉換為秒
 
-			//增加變化
-			cube.rotation.x += 0.01;
-			cube.rotation.y += 0.01;
+			cube.rotation.x = time;
+			cube.rotation.y = time;
 
 			renderer.render(scene,camera);
+
+			requestAnimationFrame(render);
 		}
-		animate();
+		requestAnimationFrame(render);
 
 
 	</script>

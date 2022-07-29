@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>My first three.js app</title>
+	<style>
+		body {
+			margin: 0;
+		}
+
+	</style>
+</head>
+
+<body>
+	<canvas id="c"></canvas>
+	<script type="importmap">
+		{
+			"imports": {
+				"three": "https://threejs.org/build/three.module.js"
+			}
+		}
+	</script>
+	<!-- Remove this when import maps will be widely supported -->
+	<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+	<script type="module">
+		import * as THREE from 'three';
+
+		function main() {
+			const canvas = document.querySelector('#c');
+			const renderer = new THREE.WebGLRenderer({ canvas });
+
+			const fov = 75;
+			const aspect = 2;  // the canvas default
+			const near = 0.1;
+			const far = 5;
+			const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
+			camera.position.z = 2;
+
+			const scene = new THREE.Scene();
+			{
+				const color = 0xFFFFFF;
+				const intensity = 1;
+				const light = new THREE.DirectionalLight(color,intensity);
+				light.position.set(-1,2,4);
+				scene.add(light);
+			}
+
+			const boxWidth = 1;
+			const boxHeight = 1;
+			const boxDepth = 1;
+			const geometry = new THREE.BoxGeometry(boxWidth,boxHeight,boxDepth);
+			// The MeshBasicMaterial is not affected by lights. Let's change it to a MeshPhongMaterial which is affected by lights.
+			const material = new THREE.MeshPhongMaterial({color: 0x44aa88});  // greenish blue
+			// const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });  // greenish blue
+
+			const cube = new THREE.Mesh(geometry,material);
+			scene.add(cube);
+			// 然後我們將立方體的 X 和 Y 旋轉設置為當前時間。
+			// 這些旋轉以弧度為單位。一個圓圈中有 2 個 pi 弧度，所以我們的立方體應該在大約 6.28 秒內在每個軸上轉一圈。
+			function render(time) {
+				time *= 0.001;  // convert time to seconds
+
+				cube.rotation.x = time;
+				cube.rotation.y = time;
+
+				renderer.render(scene,camera);
+
+				requestAnimationFrame(render);
+			}
+			requestAnimationFrame(render);
+		}
+		main();
+	</script>
+</body>
+
+</html>

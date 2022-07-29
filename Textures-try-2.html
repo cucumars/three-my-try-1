@@ -28,10 +28,26 @@
 	<!-- <script type="module"> -->
 	<script>
 		// 場景
+		// const scene = new THREE.Scene();
 		const scene = new THREE.Scene();
+			{
+				const color = 0xFFFFFF;
+				const intensity = 2;
+				const light = new THREE.DirectionalLight(color,intensity);
+				light.position.set(-1,2,4);
+				scene.add(light);
+			}
 		// 照相機
+		// const fov = 75;
+		// const aspect = 2;  // 畫布默認值
+		// const near = 0.1;
+		// const far = 5;
+		// const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
+
 		// 使用透視相機(field of view=>(FOV=>視野),aspect ratio=>縱橫比,near plane,far plane=>距離相機比值更遠far或更近near的物件不會被渲染)
 		const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1,1000);
+		// camera.position.x = 1;
+		// camera.position.y = 2;
 		camera.position.z = 5;
 
 		// 渲染器
@@ -43,42 +59,43 @@
 
 		// loder Texture to the material (材質)
 		const loader = new THREE.TextureLoader();
-		const material = new THREE.MeshBasicMaterial({
+		const material = new THREE.MeshPhongMaterial({
 			color: 0xFF8844,
 			map: loader.load('./images/wall.jpg'),
 		});
-		
+
 		// BoxGeometry每個面可以使用 6 種材料。 
 		// ConeGeometry可以使用 2 種材料，一種用於底部，一種用於錐體。
 		// CylinderGeometry可以使用 3 種材料，底部、頂部和側面。
 
 		const materials = [
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-1.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-2.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-3.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-4.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-5.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-6.jpg')}),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-1.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-2.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-3.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-4.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-5.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-6.jpg') }),
 		];
 
 		const materialCone = [
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-4.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-1.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-6.jpg')}),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-4.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-1.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-6.jpg') }),
 		];
 
 		const materialCylinder = [
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-1.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-2.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-3.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-4.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-5.jpg')}),
-			new THREE.MeshBasicMaterial({map: loader.load('./images/flower-6.jpg')}),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-1.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-2.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-3.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-4.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-5.jpg') }),
+			new THREE.MeshPhongMaterial({ map: loader.load('./images/flower-6.jpg') }),
 		];
 
 		// geometry 製造幾何圖形
+		// const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
 		const geometry = new THREE.BoxGeometry(1,1,1);
-		// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+		// const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
 		const cube = new THREE.Mesh(geometry,material);
 		scene.add(cube);
 
