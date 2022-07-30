@@ -153,7 +153,7 @@
       domeMesh.castShadow = true;
       bodyMesh.add(domeMesh);
       domeMesh.position.y = 0.5;
-
+      // 增加砲管
       const turretWidth = .1;
       const turretHeight = .1;
       const turretLength = carLength * .75 * .2;
@@ -168,53 +168,59 @@
       turretPivot.add(turretMesh);
       bodyMesh.add(turretPivot);
 
-      // const turretCamera = makeCamera();
-      // turretCamera.position.y = .75 * .2;
-      // turretMesh.add(turretCamera);
+      // 增加砲管照相機
+      const turretCamera = makeCamera();
+      turretCamera.position.y = .75 * .2;
+      turretMesh.add(turretCamera);
 
-      // const targetGeometry = new THREE.SphereGeometry(.5,6,3);
-      // const targetMaterial = new THREE.MeshPhongMaterial({ color: 0x00FF00,flatShading: true });
-      // const targetMesh = new THREE.Mesh(targetGeometry,targetMaterial);
-      // const targetOrbit = new THREE.Object3D();
-      // const targetElevation = new THREE.Object3D();
-      // const targetBob = new THREE.Object3D();
-      // targetMesh.castShadow = true;
-      // scene.add(targetOrbit);
-      // targetOrbit.add(targetElevation);
-      // targetElevation.position.z = carLength * 2;
-      // targetElevation.position.y = 8;
-      // targetElevation.add(targetBob);
-      // targetBob.add(targetMesh);
+      // 設定目標
+      const targetGeometry = new THREE.SphereGeometry(.5,6,3);
+      const targetMaterial = new THREE.MeshPhongMaterial({ color: 0x00FF00,flatShading: true });
+      const targetMesh = new THREE.Mesh(targetGeometry,targetMaterial);
+      // 目標軌道
+      const targetOrbit = new THREE.Object3D();
+      const targetElevation = new THREE.Object3D();
+      const targetBob = new THREE.Object3D();
+      targetMesh.castShadow = true;
+      scene.add(targetOrbit);
+      targetOrbit.add(targetElevation);
+      targetElevation.position.z = carLength * 2;
+      targetElevation.position.y = 8;
+      targetElevation.add(targetBob);
+      targetBob.add(targetMesh);
 
-      // const targetCamera = makeCamera();
-      // const targetCameraPivot = new THREE.Object3D();
-      // targetCamera.position.y = 1;
-      // targetCamera.position.z = -2;
-      // targetCamera.rotation.y = Math.PI;
-      // targetBob.add(targetCameraPivot);
-      // targetCameraPivot.add(targetCamera);
+      // 設定目標相機
+      const targetCamera = makeCamera();
+      //                轉軸(樞軸)
+      const targetCameraPivot = new THREE.Object3D();
+      targetCamera.position.y = 1;
+      targetCamera.position.z = -2;
+      targetCamera.rotation.y = Math.PI;
+      targetBob.add(targetCameraPivot);
+      targetCameraPivot.add(targetCamera);
 
-      // // Create a sine-like wave
-      // const curve = new THREE.SplineCurve([
-      //   new THREE.Vector2(-10,0),
-      //   new THREE.Vector2(-5,5),
-      //   new THREE.Vector2(0,0),
-      //   new THREE.Vector2(5,-5),
-      //   new THREE.Vector2(10,0),
-      //   new THREE.Vector2(5,10),
-      //   new THREE.Vector2(-5,10),
-      //   new THREE.Vector2(-10,-10),
-      //   new THREE.Vector2(-15,-8),
-      //   new THREE.Vector2(-10,0),
-      // ]);
+      // Create a sine-like wave  // 坦克地板軌道樣條曲線
+      const curve = new THREE.SplineCurve([
+        new THREE.Vector2(-10,0),
+        new THREE.Vector2(-5,5),
+        new THREE.Vector2(0,0),
+        new THREE.Vector2(5,-5),
+        new THREE.Vector2(10,0),
+        new THREE.Vector2(5,10),
+        new THREE.Vector2(-5,10),
+        new THREE.Vector2(-10,-10),
+        new THREE.Vector2(-15,-8),
+        new THREE.Vector2(-10,0),
+      ]);
 
-      // const points = curve.getPoints(50);
-      // const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      // const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-      // const splineObject = new THREE.Line(geometry,material);
-      // splineObject.rotation.x = Math.PI * .5;
-      // splineObject.position.y = 0.05;
-      // scene.add(splineObject);
+      const points = curve.getPoints(50);
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+      // 坦克地板軌道樣條
+      const splineObject = new THREE.Line(geometry,material);
+      splineObject.rotation.x = Math.PI * .5;
+      splineObject.position.y = 0.05;
+      scene.add(splineObject);
 
       function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
@@ -227,16 +233,16 @@
         return needResize;
       }
 
-      // const targetPosition = new THREE.Vector3();
-      // const tankPosition = new THREE.Vector2();
-      // const tankTarget = new THREE.Vector2();
+      const targetPosition = new THREE.Vector3();
+      const tankPosition = new THREE.Vector2();
+      const tankTarget = new THREE.Vector2();
 
-      // const cameras = [
-      //   { cam: camera,desc: 'detached camera',},
-      //   { cam: turretCamera,desc: 'on turret looking at target',},
-      //   { cam: targetCamera,desc: 'near target looking at tank',},
-      //   { cam: tankCamera,desc: 'above back of tank',},
-      // ];
+      const cameras = [
+        { cam: camera,desc: 'detached camera',},
+        { cam: turretCamera,desc: 'on turret looking at target',},
+        { cam: targetCamera,desc: 'near target looking at tank',},
+        { cam: tankCamera,desc: 'above back of tank',},
+      ];
 
       // const infoElem = document.querySelector('#info');
 
@@ -245,27 +251,27 @@
 
         if (resizeRendererToDisplaySize(renderer)) {
           const canvas = renderer.domElement;
-          // cameras.forEach((cameraInfo) => {
-          //   const camera = cameraInfo.cam;
-          //   camera.aspect = canvas.clientWidth / canvas.clientHeight;
-          //   camera.updateProjectionMatrix();
-          // });
+          cameras.forEach((cameraInfo) => {
+            const camera = cameraInfo.cam;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+          });
         }
 
-        // move target
-        // targetOrbit.rotation.y = time * .27;
-        // targetBob.position.y = Math.sin(time * 2) * 4;
-        // targetMesh.rotation.x = time * 7;
-        // targetMesh.rotation.y = time * 13;
-        // targetMaterial.emissive.setHSL(time * 10 % 1,1,.25);
-        // targetMaterial.color.setHSL(time * 10 % 1,1,.25);
+        // move target => 移動目標
+        targetOrbit.rotation.y = time * .27;
+        targetBob.position.y = Math.sin(time * 2) * 4;
+        targetMesh.rotation.x = time * 7;
+        targetMesh.rotation.y = time * 13;
+        targetMaterial.emissive.setHSL(time * 10 % 1,1,.25);
+        targetMaterial.color.setHSL(time * 10 % 1,1,.25);
 
         // move tank
-        // const tankTime = time * .05;
-        // curve.getPointAt(tankTime % 1,tankPosition);
-        // curve.getPointAt((tankTime + 0.01) % 1,tankTarget);
-        // tank.position.set(tankPosition.x,0,tankPosition.y);
-        // tank.lookAt(tankTarget.x,0,tankTarget.y);
+        const tankTime = time * .05;
+        curve.getPointAt(tankTime % 1,tankPosition);
+        curve.getPointAt((tankTime + 0.01) % 1,tankTarget);
+        tank.position.set(tankPosition.x,0,tankPosition.y);
+        tank.lookAt(tankTarget.x,0,tankTarget.y);
 
         // face turret at target
         // targetMesh.getWorldPosition(targetPosition);
@@ -286,7 +292,7 @@
         // infoElem.textContent = camera.desc;
 
         // renderer.render(scene,camera.cam);
-        renderer.render(scene,camera);
+        renderer.render(scene,camera); //暫時修改
 
         requestAnimationFrame(render);
       }
