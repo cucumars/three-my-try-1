@@ -32,6 +32,7 @@
 		const cube = new THREE.Mesh(geometry,material);
 		scene.add(cube);
 		
+		// cube.position.x = 3;
 
 		camera.position.z = 5;
 		// 渲染場景
@@ -40,8 +41,8 @@
 			requestAnimationFrame(animate);
 
 			//增加變化
-			cube.rotation.x += 0.01;
-			cube.rotation.y += 0.01;
+			// cube.rotation.x += 0.01;
+			// cube.rotation.y += 0.01;
 
 			renderer.render(scene,camera);
 		}

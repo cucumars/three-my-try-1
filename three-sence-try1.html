@@ -33,10 +33,12 @@
 	</script>
   <script type="module">
     import * as THREE from 'three';
+    import {GUI} from 'https://threejs.org/examples/jsm/libs/lil-gui.module.min.js';
 
     function main() {
       const canvas = document.querySelector('#c');
       const renderer = new THREE.WebGLRenderer({ canvas });
+      const gui = new GUI();
 
       const fov = 40;
       const aspect = 2;  // the canvas default
@@ -94,6 +96,62 @@
       moonMesh.scale.set(.5,.5,.5);
       moonOrbit.add(moonMesh);
       objects.push(moonMesh);
+
+      // 呈現軸與網格的寫法
+      // 打開/關閉軸和網格可見
+      // lil-gui 需要一個返回布爾值的屬性
+      // 決定做一個複選框，所以我們做一個 setter
+      // 以及 `visible` 的 getter，我們可以告訴 lil-gui 去看。
+      class AxisGridHelper {
+        constructor(node, units = 10) {
+          const axes = new THREE.AxesHelper();
+          axes.material.depthTest = false;
+          // 我們將他們的材料設置depthTest為 false，這意味著他們不會檢查他們是否正在繪製其他東西。
+          // 我們還將它們設置renderOrder為 1（默認值為 0），以便在所有球體之後繪製它們。否則，一個球體可能會覆蓋它們並覆蓋它們。
+          axes.renderOrder = 2;  // 在網格之後
+          node.add(axes);
+
+          // 想為每個節點製作一個 GridHelper
+          const grid = new THREE.GridHelper(units, units);
+          grid.material.depthTest = false;
+          grid.renderOrder = 1;
+          node.add(grid);
+      
+          this.grid = grid;
+          this.axes = axes;
+          this.visible = false;
+        }
+        get visible() {
+          return this._visible;
+        }
+        set visible(v) {
+          this._visible = v;
+          this.grid.visible = v;
+          this.axes.visible = v;
+        }
+      }
+      // 為每個節點添加一個 AxesHelper
+      // objects.forEach((node) => {
+      //   const axes = new THREE.AxesHelper();
+      //   // 我們將他們的材料設置depthTest為 false，這意味著他們不會檢查他們是否正在繪製其他東西。
+      //   // 我們還將它們設置renderOrder為 1（默認值為 0），以便在所有球體之後繪製它們。否則，一個球體可能會覆蓋它們並覆蓋它們。
+      //   axes.material.depthTest = false;
+      //   axes.renderOrder = 1;
+      //   node.add(axes);
+      // });
+      // 想為每個節點製作一個 GridHelper
+
+      function makeAxisGrid(node, label, units) {
+        const helper = new AxisGridHelper(node, units);
+        gui.add(helper, 'visible').name(label);
+      }
+      // 為每個節點添加一個 AxesHelper 與 為每個節點製作一個 GridHelper
+      makeAxisGrid(solarSystem, 'solarSystem', 25);
+      makeAxisGrid(sunMesh, 'sunMesh');
+      makeAxisGrid(earthOrbit, 'earthOrbit');
+      makeAxisGrid(earthMesh, 'earthMesh');
+      makeAxisGrid(moonOrbit, 'moonOrbit');
+      makeAxisGrid(moonMesh, 'moonMesh');
 
       function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
