@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My first three.js app</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #c {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+  </style>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+  <div id="info"></div>
+  <script type="importmap">
+		{
+			"imports": {
+				"three": "https://threejs.org/build/three.module.js"
+			}
+		}
+	</script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+    import { GUI } from 'https://threejs.org/examples/jsm/libs/lil-gui.module.min.js';
+
+    function main() {
+      const canvas = document.querySelector('#c');
+      const renderer = new THREE.WebGLRenderer({ canvas });
+
+      const fov = 45;
+      const aspect = 2;  // the canvas default
+      const near = 0.1;
+      const far = 100;
+      const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
+      camera.position.set(0,10,20);
+
+      class MinMaxGUIHelper {
+        constructor(obj,minProp,maxProp,minDif) {
+          this.obj = obj; // camera
+          this.minProp = minProp; //'near'
+          this.maxProp = maxProp; //'faer'
+          this.minDif = minDif; // 0.1    
+        }
+        get min() {
+          console.log(this.obj,this.minProp);
+          // console.log('get=>', this.obj[this.minProp]);
+          return this.obj[this.minProp]; //取出 near 值
+        }
+        set min(v) {
+          this.obj[this.minProp] = v;
+          // far max 取 far現有值 與 near設定值+this.minDif 中最大值 => 因為 far 總是大於 near
+          this.obj[this.maxProp] = Math.max(this.obj[this.maxProp],v + this.minDif);
+          console.log(v,this.obj[this.maxProp],v + this.minDif,this.obj[this.minProp] );
+        }
+        get max() {
+          return this.obj[this.maxProp];
+        }
+        set max(v) {
+          this.obj[this.maxProp] = v;
+          // ****
+          this.min = this.min;  // this will call the min setter
+        }
+      }
+
+      function updateCamera() {
+        camera.updateProjectionMatrix();
+      }
+
+      const gui = new GUI();
+      gui.add(camera,'fov',1,180).onChange(updateCamera);
+      const minMaxGUIHelper = new MinMaxGUIHelper(camera,'near','far',0.1);
+      gui.add(minMaxGUIHelper,'min',0.1,50,0.1).name('near').onChange(updateCamera);
+      gui.add(minMaxGUIHelper,'max',0.1,50,0.1).name('far').onChange(updateCamera);
+
+      const controls = new OrbitControls(camera,canvas);
+      controls.target.set(0,5,0);
+      controls.update();
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color('black');
+
+      {
+        const planeSize = 40;
+
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load('https://threejs.org/manual/examples/resources/images/checker.png');
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.NearestFilter;
+        const repeats = planeSize / 2;
+        texture.repeat.set(repeats,repeats);
+
+        const planeGeo = new THREE.PlaneGeometry(planeSize,planeSize);
+        const planeMat = new THREE.MeshPhongMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
+        const mesh = new THREE.Mesh(planeGeo,planeMat);
+        mesh.rotation.x = Math.PI * -.5;
+        scene.add(mesh);
+      }
+      {
+        const cubeSize = 4;
+        const cubeGeo = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize);
+        const cubeMat = new THREE.MeshPhongMaterial({ color: '#8AC' });
+        const mesh = new THREE.Mesh(cubeGeo,cubeMat);
+        mesh.position.set(cubeSize + 1,cubeSize / 2,0);
+        scene.add(mesh);
+      }
+      {
+        const sphereRadius = 3;
+        const sphereWidthDivisions = 32;
+        const sphereHeightDivisions = 16;
+        const sphereGeo = new THREE.SphereGeometry(sphereRadius,sphereWidthDivisions,sphereHeightDivisions);
+        const sphereMat = new THREE.MeshPhongMaterial({ color: '#CA8' });
+        const mesh = new THREE.Mesh(sphereGeo,sphereMat);
+        mesh.position.set(-sphereRadius - 1,sphereRadius + 2,0);
+        scene.add(mesh);
+      }
+
+      {
+        const color = 0xFFFFFF;
+        const intensity = 1;
+        const light = new THREE.DirectionalLight(color,intensity);
+        light.position.set(0,10,0);
+        light.target.position.set(-5,0,0);
+        scene.add(light);
+        scene.add(light.target);
+      }
+
+      function resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+          renderer.setSize(width,height,false);
+        }
+        return needResize;
+      }
+
+      function render() {
+
+        if (resizeRendererToDisplaySize(renderer)) {
+          const canvas = renderer.domElement;
+          camera.aspect = canvas.clientWidth / canvas.clientHeight;
+          // 每當相機的設置發生變化時，我們都需要調用相機的 updateProjectionMatrix函數
+          camera.updateProjectionMatrix();
+        }
+
+        renderer.render(scene,camera);
+
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    main();
+
+
+  </script>
+</body>
+
+</html>
+<!-- 製作Object3D節點並為它們創建父物件是很好地使用像three.js 這樣的3D 引擎的重要一步 -->
+<!-- Making Object3D nodes and parenting things to them is an important step to using a 3D engine like three.js well -->

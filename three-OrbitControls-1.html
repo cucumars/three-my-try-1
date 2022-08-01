@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My first three.js app</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #c {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+  </style>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+  <div id="info"></div>
+  <script type="importmap">
+		{
+			"imports": {
+				"three": "https://threejs.org/build/three.module.js"
+			}
+		}
+	</script>
+  <script type="module">
+    import * as THREE from 'three';
+    // OrbitControls讓用戶圍繞某個點旋轉或環繞相機 =>(軌道控制 OrbitControls)允許相機圍繞目標軌道運行。
+    import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+    // import { GUI } from 'https://threejs.org/examples/jsm/libs/lil-gui.module.min.js';
+
+    const canvas = document.querySelector('#c');
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    // const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45,window.innerWidth / window.innerHeight,1,10000);
+
+    const controls = new OrbitControls(camera,renderer.domElement);
+
+    // controls.update() must be called after any manual changes to the camera's transform
+    camera.position.set(0,20,100);
+    controls.update();
+
+    function animate() {
+
+      requestAnimationFrame(animate);
+
+      // required if controls.enableDamping or controls.autoRotate are set to true
+      controls.update();
+
+      renderer.render(scene,camera);
+
+    }
+    animate();
+  </script>
+</body>
+
+</html>
