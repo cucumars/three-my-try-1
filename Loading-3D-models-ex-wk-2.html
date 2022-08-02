@@ -404,7 +404,9 @@
         });
       }
 
-      function traverseFun(object) {
+      // 使用Object3d traverse 方法循環遍歷Threejs物件中的所有子物件
+      // 遍歷子物件 設定 castShadow and receiveShadow 
+      function traverseShadowFun(object) {
         object.traverse(function (child) {
           if (child.isMesh) {
             child.castShadow = true;
@@ -413,28 +415,60 @@
         });
       }
 
-      //加入弓箭手FBX的模型
-      let mixer_Archer;
+
+      //加入FBX的模型
+      function loaderFBXModel(modelPath) {
+        let loaderFBX = new FBXLoader();
+        let returnObject;  
+        loaderFBX.load(modelPath,function (object) {
+          // let mixerObject = new THREE.AnimationMixer(object);
+          traverseShadowFun(object);
+          object.rotation.y = Math.PI / 2;
+          object.position.set(0,5,-10);
+          object.name = 'Archer_FBX';
+          object.visible = true; //default
+          // object.background = 'red';
+          object.scale.set(.1,.1,.1);
+          scene.add(object);
+          console.log('action:object',object,scene);
+          returnObject = Object;
+        });
+        return returnObject;
+      }
+
+      //加入弓箭手FBX的模型    
+      loaderFBXModel('./3Dmodel/FBX/弓箭手-攻擊.fbx');
+      let mixer_Archer = new THREE.AnimationMixer(object);
+  
+      // let loaderFBX = new FBXLoader();
+      // loaderFBX.load('./3Dmodel/FBX/弓箭手-攻擊.fbx',function (object) {
+      //   mixer_Archer = new THREE.AnimationMixer(object);
+      //   traverseShadowFun(object);
+      //   object.rotation.y = Math.PI / 2;
+      //   object.position.set(0,5,-10);
+      //   object.name = 'Archer_FBX';
+      //   object.visible = true; //default
+      //   // object.background = 'red';
+      //   object.scale.set(.1,.1,.1);
+      //   scene.add(object);
+      //   console.log('action:object',object,scene);
+      // });
+
+      //加入騎兵FBX的模型
+      let mixer_Cavalry;
       let loaderFBX = new FBXLoader();
       loaderFBX.load('./3Dmodel/FBX/弓箭手-攻擊.fbx',function (object) {
-        mixer_Archer = new THREE.AnimationMixer(object);
-        traverseFun(object); 
-        // object.traverse(function (child) {
-        //   if (child.isMesh) {
-        //     child.castShadow = true;
-        //     child.receiveShadow = true;
-        //   }
-        // });
+        mixer_Cavalry = new THREE.AnimationMixer(object);
+        traverseShadowFun(object);
         object.rotation.y = Math.PI / 2;
         object.position.set(0,5,-10);
-        object.name = 'Archer_FBX';
+        object.name = '_Cavalry_FBX';
         object.visible = true; //default
         // object.background = 'red';
         object.scale.set(.1,.1,.1);
         scene.add(object);
         console.log('action:object',object,scene);
       });
-
       // const mixer_Archer = new THREE.AnimationMixer(object);
       // let Archer_FBX = scene.getObjectByName('Archer_FBX');
       // console.log(Archer_FBX);
@@ -526,7 +560,7 @@
           camera.aspect = canvas.clientWidth / canvas.clientHeight;
           camera.updateProjectionMatrix();
           time *= 0.0001;  // 將時間轉換為秒
-          let time2 = time ; 
+          let time2 = time;
           scene.rotation.y = time;
 
           if (mixer_Archer) {
@@ -570,11 +604,6 @@
         // console.log(scene.background );
       });
 
-      // const Archer_FBX = scene.getObjectByName('Archer_FBX');
-      // console.log(1,Archer_FBX);
-      // Archer_FBX.visible = true;
-      // Archer_Material.visible = false;
-      // const Archer_FBX_action = mixer_Archer.clipAction(Archer_FBX.animations[0]);  
 
       const startBtn = document.querySelector('.js-camera-toggle');
       startBtn.addEventListener('click',() => {
@@ -584,49 +613,7 @@
         Archer_FBX_action.play();//動畫播放
         // Archer_Material.depthWrite = true;
       })
-
-
-      // const  clock = new THREE.Clock();
-      // function animation() {
-
-        // const delta = clock.getDelta();
-
-        // if (mixer_Archer) {
-        //   // console.log(delta);
-        //   mixer_Archer.update(delta);
-        //   let Archer_FBX = scene.getObjectByName('Archer_FBX');
-        //   console.log('Archer_FBX =>',Archer_FBX);
-        //   const Archer_FBX_action = mixer_Archer.clipAction(Archer_FBX.animations[0]);
-        //   Archer_FBX_action.play();//動畫播放
-        // }
-
-        // if (mixer_Warrior) {
-        //   mixer_Warrior.update(delta);
-        // }
-
-        // if (mixer_Cavalry) {
-        //   mixer_Cavalry.update(delta);
-        // }
-
-        // stats.update();
-        // TWEEN.update();
-        // controls.update();
-        // requestAnimationFrame(animation);//創造一個循環
-        // composer.render(scene,camera);//繪製場景
-        // cameraZoomin();
-        // time();
-        // control_Scale();
-        // control_Opacity();
-        // console.log(downTime);
-        // console.log(camera.position);
-
-      //   updateCamera();//運鏡
-      }
-
-      // animation();//呼叫動畫函數，為了要抓到Load物件裡面東西
-
-    // }
-
+    }
     main();
 
   </script>
