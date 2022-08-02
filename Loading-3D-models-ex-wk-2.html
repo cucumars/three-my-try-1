@@ -421,7 +421,7 @@
         let loaderFBX = new FBXLoader();
         let returnObject;  
         loaderFBX.load(modelPath,function (object) {
-          // let mixerObject = new THREE.AnimationMixer(object);
+          // mixer_Archer = new THREE.AnimationMixer(object);
           traverseShadowFun(object);
           object.rotation.y = Math.PI / 2;
           object.position.set(0,5,-10);
@@ -436,10 +436,10 @@
         return returnObject;
       }
 
-      //加入弓箭手FBX的模型    
-      loaderFBXModel('./3Dmodel/FBX/弓箭手-攻擊.fbx');
-      let mixer_Archer = new THREE.AnimationMixer(object);
-  
+      //加入弓箭手FBX的模型
+      let mixer_Archer = new THREE.AnimationMixer(loaderFBXModel('./3Dmodel/FBX/弓箭手-攻擊.fbx'));
+      // loaderFBXModel('./3Dmodel/FBX/弓箭手-攻擊.fbx');
+
       // let loaderFBX = new FBXLoader();
       // loaderFBX.load('./3Dmodel/FBX/弓箭手-攻擊.fbx',function (object) {
       //   mixer_Archer = new THREE.AnimationMixer(object);
