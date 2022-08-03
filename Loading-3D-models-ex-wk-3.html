@@ -452,11 +452,13 @@
         function xxxmixerObjectPlay(groupIndex, object, index){
           // console.log('ggggggggggg',roleFBX[0][1].name);
           // let y = roleFBX[0][1].name;
-          // let x = scene.getObjectByName('Warrior_OBJ_still',true);
+          let x = scene.getObjectByName(roleFBX[groupIndex][index].name);
+          x.position.set(roleMTLOBJ0Position.x*0.7+10, 3.32, roleMTLOBJ0Position.y*0.7-10);
           // console.log(roleFBX[0][1].name,x);
           // roleFBXScene[groupIndex][index] = scene.getObjectByName(object.name);
           // scene.getObjectByName(roleFBXScene[0][0].name)
-          mixerObject[groupIndex][index]._root.position.set(roleMTLOBJ0Position.x*0.7+groupIndex, 3.32, roleMTLOBJ0Position.y*0.7+1);
+          // roleFBXScene[groupIndex][index].position.set(roleMTLOBJ0Position.x*0.7+groupIndex, 3.32, roleMTLOBJ0Position.y*0.7+1);
+          // mixerObject[groupIndex][index]._root.position.set(roleMTLOBJ0Position.x*0.7+groupIndex, 3.32, roleMTLOBJ0Position.y*0.7+1);
         }
         // 坦克對著目標
         // mixerObject[0][0].lookAt(100,10,10);
