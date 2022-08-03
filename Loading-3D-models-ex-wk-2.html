@@ -415,29 +415,50 @@
         });
       }
 
-
+      let mixerObject = [];
       //加入FBX的模型
-      function loaderFBXModel(modelPath) {
+      function loaderFBXModel(model,index) {
+  
         let loaderFBX = new FBXLoader();
         let returnObject;  
-        loaderFBX.load(modelPath,function (object) {
-          // mixer_Archer = new THREE.AnimationMixer(object);
+
+        loaderFBX.load(model.path,function (object) {
+          console.log(1);
+          mixerObject[index] = new THREE.AnimationMixer(object);
           traverseShadowFun(object);
           object.rotation.y = Math.PI / 2;
           object.position.set(0,5,-10);
-          object.name = 'Archer_FBX';
+          object.name = model.name;//'Archer_FBX';
           object.visible = true; //default
           // object.background = 'red';
           object.scale.set(.1,.1,.1);
           scene.add(object);
-          console.log('action:object',object,scene);
-          returnObject = Object;
+          returnObject = Object;    
+          console.log('action:object1', returnObject,scene);
         });
-        return returnObject;
+        // console.log('action:object2', returnObject,scene);
+        // return returnObject;
       }
 
+      let mixerRole = [
+        { path: './3Dmodel/FBX/弓箭手-攻擊.fbx',
+          name: 'Archer_FBX',
+        },
+        { path: './3Dmodel/FBX/弓箭手-攻擊.fbx',
+          name: 'Archer_FBX',
+        },
+        { path: './3Dmodel/FBX/弓箭手-攻擊.fbx',
+          name: 'Archer_FBX',
+        },
+      ];
+      mixerRole.forEach(loaderFBXModel);
+  
       //加入弓箭手FBX的模型
-      let mixer_Archer = new THREE.AnimationMixer(loaderFBXModel('./3Dmodel/FBX/弓箭手-攻擊.fbx'));
+      // let objectArcher = loaderFBXModel('./3Dmodel/FBX/弓箭手-攻擊.fbx')
+      // console.log('objectArcher=>',objectArcher);
+      // objectArcher.name = 'Archer_FBX';
+      // let mixer_Archer = new THREE.AnimationMixer(objectArcher);
+      // console.log(2);
       // loaderFBXModel('./3Dmodel/FBX/弓箭手-攻擊.fbx');
 
       // let loaderFBX = new FBXLoader();
@@ -455,20 +476,20 @@
       // });
 
       //加入騎兵FBX的模型
-      let mixer_Cavalry;
-      let loaderFBX = new FBXLoader();
-      loaderFBX.load('./3Dmodel/FBX/弓箭手-攻擊.fbx',function (object) {
-        mixer_Cavalry = new THREE.AnimationMixer(object);
-        traverseShadowFun(object);
-        object.rotation.y = Math.PI / 2;
-        object.position.set(0,5,-10);
-        object.name = '_Cavalry_FBX';
-        object.visible = true; //default
-        // object.background = 'red';
-        object.scale.set(.1,.1,.1);
-        scene.add(object);
-        console.log('action:object',object,scene);
-      });
+      // let mixer_Cavalry;
+      // let loaderFBX = new FBXLoader();
+      // loaderFBX.load('./3Dmodel/FBX/弓箭手-攻擊.fbx',function (object) {
+      //   mixer_Cavalry = new THREE.AnimationMixer(object);
+      //   traverseShadowFun(object);
+      //   object.rotation.y = Math.PI / 2;
+      //   object.position.set(0,5,-10);
+      //   // object.name = '_Cavalry_FBX';
+      //   object.visible = true; //default
+      //   // object.background = 'red';
+      //   object.scale.set(.1,.1,.1);
+      //   scene.add(object);
+      //   console.log('action:object',object,scene);
+      // });
       // const mixer_Archer = new THREE.AnimationMixer(object);
       // let Archer_FBX = scene.getObjectByName('Archer_FBX');
       // console.log(Archer_FBX);
@@ -563,8 +584,11 @@
           let time2 = time;
           scene.rotation.y = time;
 
-          if (mixer_Archer) {
-            mixer_Archer.update(0.01);
+          // if (mixer_Archer) {
+          //   mixer_Archer.update(0.01);
+          // }
+          if (mixerObject[0]) {
+            mixerObject[0].update(0.01);
           }
         }
 
@@ -609,7 +633,7 @@
       startBtn.addEventListener('click',() => {
         let Archer_FBX = scene.getObjectByName('Archer_FBX');
         console.log('Archer_FBX =>',Archer_FBX);
-        const Archer_FBX_action = mixer_Archer.clipAction(Archer_FBX.animations[0]);
+        const Archer_FBX_action = mixerObject[0].clipAction(Archer_FBX.animations[0]);
         Archer_FBX_action.play();//動畫播放
         // Archer_Material.depthWrite = true;
       })

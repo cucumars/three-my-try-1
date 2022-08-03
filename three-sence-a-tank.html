@@ -212,7 +212,10 @@
       targetBob.add(targetCameraPivot);
       targetCameraPivot.add(targetCamera);
 
-      // Create a sine-like wave  // 坦克地板軌道樣條曲線
+      // Create a sine-like wave  // 坦克地板軌道樣條曲線 
+      // getPoints(divisions)把曲線分為divisions段，返回每個點的坐標數組。
+      // 下面的就是通過getPoint(50)返回曲線上 
+      // 50等分點的坐標，然後通過這些坐標構建一條曲線。
       const curve = new THREE.SplineCurve([
         new THREE.Vector2(-10,0),
         new THREE.Vector2(-5,5),
@@ -283,10 +286,11 @@
         // move tank
         const tankTime = time * .05;
         curve.getPointAt(tankTime % 1,tankPosition);
+        console.log(tankPosition);
         curve.getPointAt((tankTime + 0.01) % 1,tankTarget);
         tank.position.set(tankPosition.x,0,tankPosition.y);
         // 坦克對著目標
-        tank.lookAt(tankTarget.x,0,tankTarget.y);
+        // tank.lookAt(tankTarget.x,0,tankTarget.y);
 
         // face turret at target 砲口對著目標
         // 取得目標的世界位置，然後將砲口指向目標
