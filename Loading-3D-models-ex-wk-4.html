@@ -83,6 +83,7 @@
       bottom: 15px;
       left: 20px;
       z-index: 10;
+      cursor: pointer;
     }
 
     .sound-toggle.disabled {
@@ -129,8 +130,8 @@
     import { FBXLoader } from 'https://threejs.org/examples/jsm/loaders/FBXLoader.js';
 
     function main() {
-      const gui = new GUI();
-      // 載入 加入 弓箭手、騎兵、戰士 OBJ MTL 模型
+      // const gui = new GUI();
+      // 載入 加入 弓箭手、騎兵、戰士 OBJ MTL 模型資料
       let roleMTLOBJ = [
         {
           pathMTL: './3DModel/OBJ/弓箭手.mtl',
@@ -201,31 +202,41 @@
         ],
       ];
 
+      // 背景圖片
+      const bgImage = [
+        './images/bg-3-deep.jpg',
+        './images/bg-3-invert-black.jpg',
+      ]
+
       // 載入 FBX 模型 的 二維陣列
-      // const mixerObject = [[],[],[],]; //如此寫法不彈性
       const mixerObject = new Array(roleFBX.length);
       for (var i = 0; i < roleFBX.length; i++) {
         mixerObject[i] = new Array(roleFBX[0].length);
       }
-     
 
-      // const renderer = new THREE.WebGLRenderer();
-      // 我們需要告訴WebGLRenderer使用alpha，所以我們沒有繪製任何東西的地方是透明的。
+      // FBX 動畫 
+      let roleFBXAction = Array(roleFBX.length).fill(Array(roleFBX[0].length).fill(null));
+      let roleFBXScene = Array(roleFBX.length).fill(Array(roleFBX[0].length).fill(null));
+      // MTLOBJ 靜態模型
+      let stillOBJ = [];
+
+
       const canvas = document.querySelector('#c');
 
-      // const renderer = new THREE.WebGLRenderer({ canvas });
+      // 場景設置
+      const scene = new THREE.Scene();
+      scene.rotation.x = Math.PI * -0.35;
+
       // 我們需要告訴WebGLRenderer使用alpha，所以我們沒有繪製任何東西的地方是透明的。
       const renderer = new THREE.WebGLRenderer({
         canvas,
         alpha: true,
       });
-      // renderer.setSize( window.innerWidth, window.innerHeight );
-      document.body.appendChild(renderer.domElement);
-      // 不要清除顏色
-      // renderer.autoClearColor = false;
-      // ?
+      // 色相明亮度飽和度 => 應該是 => 是否一定需要
       renderer.outputEncoding = THREE.sRGBEncoding;
+      // 是否一定需要 ?
       renderer.shadowMap.enabled = true;
+      document.body.appendChild(renderer.domElement);
 
 
       // 基本相機設置
@@ -234,38 +245,54 @@
       const near = 0.1;
       const far = 100;
       const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
-      // camera.position.set( 25, 10, 12 );
-      camera.position.set(0,30,3);
+      camera.position.set( 0, 32, 2 );
+
+      // 相機設置公用函式
+      function makeCamera(fov = 40) {
+        const aspect = 2;  // the canvas default
+        const zNear = 0.1;
+        const zFar = 1000;
+        return new THREE.PerspectiveCamera(fov,aspect,zNear,zFar);
+      }
+
+      // 增加砲管照相機
+      const turretCamera = makeCamera();
+      turretCamera.position.y = .75 * .2;
+      scene.add(turretCamera);
+
+      // 對於相機，我們在初始化時設置了一個包含所有 4 個相機的數組並帶有描述。
+      const cameras = [
+        { cam: camera,desc: 'detached camera',},
+        { cam: turretCamera,desc: 'on turret looking at target',},
+        // { cam: targetCamera,desc: 'near target looking at tank',},
+        // { cam: tankCamera,desc: 'above back of tank',},
+      ];
+
       // 環繞功能
       // OrbitControls讓用戶圍繞某個點旋轉或環繞相機 =>(軌道控制 OrbitControls)允許相機圍繞目標軌道運行。
       const controls = new OrbitControls(camera,canvas);
       controls.target.set(0,25,0);
       controls.update();
 
-      // 場景設置
-      const scene = new THREE.Scene();
-      // scene.rotation.y = Math.PI * 0.45;
-      scene.rotation.x = Math.PI * -0.4;
-      // scene.rotation.z = Math.PI * -0.05;
-      // scene.background = new THREE.Color('black');
 
-      const bgImage = [
-        './images/bg-3-deep.jpg',
-        './images/bg-3-invert-black.jpg',
-      ]
-
-      backgroundFun(bgImage[0]); // 背景處理
+      // 背景處理
+      backgroundFun(bgImage[0]); 
+      //地板平面處理 
       let groundPlane;
-      groundPlaneFun(); //地板平面處理 
+      groundPlaneFun();
+
+      // 燈光 => 還需要處理
       // DirectionalLight();
       // AmbientLight()
       HemisphereLight()
       SpotLight(); // 燈光 投射燈
+
       // 載入 OBJ MTL 模型
       roleMTLOBJ.forEach((role,index) => loaderMTLOBJModel(role,index));
-      // 加入 弓箭手、騎兵、戰士 FBX的模型
+      // 載入 FBX的模型
       roleFBX.forEach((group,groupIndex) => group.forEach((item,index) => loaderFBXModel(groupIndex,item,index)));
-      requestAnimationFrame(render); // 重複 render Animation
+      // 是否需要 ? 重複 render Animation
+      requestAnimationFrame(render); 
 
       // 背景處理
       function backgroundFun(bg) {
@@ -278,15 +305,12 @@
       function groundPlaneFun() {
         const planeSize = 18.1;
         const loader = new THREE.TextureLoader();
-        // const texture = loader.load('https://threejs.org/manual/examples/resources/images/checker.png');
-        const texture = loader.load('./images/bg-1.jpg');
+        const texture = loader.load('https://threejs.org/manual/examples/resources/images/checker.png');
+        // const texture = loader.load('./images/bg-1.jpg');
         texture.encoding = THREE.sRGBEncoding;
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.magFilter = THREE.NearestFilter;
-        // const repeats = planeSize / planeSize;
-        // texture.repeat.set(repeats,repeats);
-        // const planeGeo = new THREE.PlaneGeometry(planeSize,planeSize);
         const planeGeo = new THREE.CircleGeometry(planeSize,100);
         const planeMat = new THREE.MeshPhongMaterial({
           map: texture,
@@ -301,8 +325,6 @@
         mesh.name = 'direct_light'
         groundPlane = mesh;
         scene.add(mesh);
-        // console.log(2,groundPlane);
-        // console.log(2,scene.children[0]);
       }
 
       // 添加燈光 => AmbientLight: 全域照亮
@@ -325,9 +347,9 @@
         // light.target.position.set(0,0,0);
         scene.add(light);
 
-        const helper = new THREE.HemisphereLightHelper(light);
-        scene.add(helper);
-        helper.update();
+        // const helper = new THREE.HemisphereLightHelper(light);
+        // scene.add(helper);
+        // helper.update();
       }
 
       // DirectionalLight
@@ -342,9 +364,9 @@
         scene.add(light);
         // scene.add(light.target);
 
-        const helper = new THREE.DirectionalLightHelper(light);
-        scene.add(helper);
-        helper.update();
+        // const helper = new THREE.DirectionalLightHelper(light);
+        // scene.add(helper);
+        // helper.update();
       }
 
       // SpotLight
@@ -367,7 +389,6 @@
         updateLight();
       };
 
-
       // 3D 角色 加入 弓箭手、騎兵、戰士 MTL 模型
       function loaderMTLOBJModel(role) {
         const mtlLoader = new MTLLoader();
@@ -377,7 +398,7 @@
           objLoader.setMaterials(mtl);
           objLoader.load(role.pathOBJ,(object) => {
             scene.add(object);
-            console.log('object OBJ =>',object);
+            // console.log('object OBJ =>',object);
             object.position.set(...role.position); //一定要copy array 的方式
             object.scale.set(...role.scale); //一定要copy array 的方式
             object.name = role.name;
@@ -387,8 +408,8 @@
         });
       }
 
-      // // 使用Object3d traverse 方法循環遍歷Threejs物件中的所有子物件
-      // // 遍歷子物件 設定 castShadow and receiveShadow 
+      // 使用Object3d traverse 方法循環遍歷Threejs物件中的所有子物件
+      // 遍歷子物件 設定 castShadow and receiveShadow 
       function traverseShadowFun(object) {
         object.traverse(function (child) {
           if (child.isMesh) {
@@ -398,23 +419,12 @@
         });
       }
 
-
-      // let mixerObject = new Array(roleFBX.length);
-      // for (var i = 0; i < roleFBX.length; i++) {
-      //   mixerObject[i] = new Array(roleFBX[0].length);
-      // }
-      // roleFBX
-      // 載入 FBX 模型 
-      // const mixerObject = [[],[],[],]; //為何一定要如此寫???
-      // const mixerObject = Array(3).fill([]); //為何如此寫不行
-      console.log('mixerObject =>',mixerObject)
-      // alert();
       // 載入 FBX 模型
       function loaderFBXModel(groupIndex,role,index) {
         let loaderFBX = new FBXLoader();
         loaderFBX.load(role.path,function (object) {
           mixerObject[groupIndex][index] = new THREE.AnimationMixer(object);
-          console.log(`[${groupIndex}][${index}]`,mixerObject[groupIndex][index]);
+          // console.log(`[${groupIndex}][${index}]`,mixerObject[groupIndex][index]);
           traverseShadowFun(object);
           // object.rotation.y = Math.PI / 2;
           object.position.set(...role.position);
@@ -430,28 +440,23 @@
       // 下面的就是通過getPoint(50)返回曲線上 
       // 50等分點的坐標，然後通過這些坐標構建一條曲線。
       const curve = new THREE.SplineCurve([
-        new THREE.Vector2(10,-10),
-        // new THREE.Vector2(5,5),
-        // new THREE.Vector2(6,0),
-        // new THREE.Vector2(5,5),
-        new THREE.Vector2(12,5),
-        // new THREE.Vector2(5,4),
-        // new THREE.Vector2(5,4),
-        // new THREE.Vector2(10,5),
-        // new THREE.Vector2(10,4),
-        new THREE.Vector2(10,10),
+        new THREE.Vector2(10,-12),
+        // new THREE.Vector2(12,5),
+        new THREE.Vector2(10,7),
       ]);
 
+        // 地板軌道樣條設置
       const points = curve.getPoints(100);
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-      // 坦克地板軌道樣條
+      material.visible = false; //樣條隱藏
+      // 地板軌道樣條
       const splineObject = new THREE.Line(geometry,material);
       splineObject.rotation.x = Math.PI * .5;
       splineObject.position.y = 0.05;
       scene.add(splineObject);
 
-      // move tank
+      // 移動 FBX 動畫
       function moveObj(time) {
         const tankTime = time * 0.5;
         const roleMTLOBJ0Position = new THREE.Vector2();
@@ -459,29 +464,17 @@
         // getPointAt（u：浮點數，可選目標：向量）：向量 
         //  u - 根據弧長在曲線上的位置。必須在 [ 0, 1] 範圍內。
         // 返回曲線上給定位置的向量。
-        // getPointAt(u)：在曲線的相對位置，根據弧長返回坐標值// 
-        // .getPoint(t)：t是0到1之間的數值，返回一個坐標值
-        // curve.getPointAt((tankTime + 0.01) % 1,tankTarget);
-        // console.log(  mixerObject, roleFBXAction, scene.getObjectByName('Archer_FBX_move'),scene);
-        // mixerObject[0][0].position.set(10,0,10);
-        // mixerObject[0][0]._root.position.set(roleMTLOBJ0Position.x*0.7+4, 3.32, roleMTLOBJ0Position.y*0.7+1);
-        // mixerObject[0][1]._root.position.set(roleMTLOBJ0Position.x*0.7+4, 3.32, roleMTLOBJ0Position.y*0.7+1);
-        roleFBX.forEach((group,groupIndex) => group.forEach((item,index) => xxxmixerObjectPlay(groupIndex,item,index)));
-        function xxxmixerObjectPlay(groupIndex,object,index) {
-          // console.log('ggggggggggg',object.position[0]);
-          // let y = roleFBX[0][1].name;
+        roleFBX.forEach((group,groupIndex) => group.forEach((item,index) => mixerObjectMove(groupIndex,item,index)));
+        function mixerObjectMove(groupIndex,object,index) {
           let x = scene.getObjectByName(roleFBX[groupIndex][index].name);
           x.position.set(roleFBX[groupIndex][index].position[0],roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
-          // console.log(roleFBX[0][1].name,x);
-          // roleFBXScene[groupIndex][index] = scene.getObjectByName(object.name);
-          // scene.getObjectByName(roleFBXScene[0][0].name)
-          roleFBXScene[groupIndex][index].position.set(roleFBX[groupIndex][index].position[0],roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
-          // mixerObject[groupIndex][index]._root.position.set(roleMTLOBJ0Position.x*0.7+groupIndex, 3.32, roleMTLOBJ0Position.y*0.7+1);
+          //保留研究 => 為何這樣會有問題, 是否因為陣列宣告方式導致 => 需要再研究
+          // roleFBXScene[groupIndex][index].position.set(roleFBX[groupIndex][index].position[0],roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
+          // 也可以這樣寫 保留
+          // mixerObject[groupIndex][index]._root.position.set(roleFBX[groupIndex][index].position[0],roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
         }
-        // 坦克對著目標
-        // mixerObject[0][0].lookAt(100,10,10);
       }
-      // 
+      // 當 view 被改變大小 時 render 處理
       function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
         const width = canvas.clientWidth;
@@ -493,116 +486,125 @@
         return needResize;
       }
 
-      //
+      // render 處理
       function render(time) {
-
         if (true || resizeRendererToDisplaySize(renderer)) { //設true => 一定 reRedener
           const canvas = renderer.domElement;
           camera.aspect = canvas.clientWidth / canvas.clientHeight;
           camera.updateProjectionMatrix();
           time *= 0.0001;  // 將時間轉換為秒
-          let time2 = time;
-          // scene.rotation.y = time;
+          // 旋轉展示
+          scene.rotation.y = time; 
 
-          // 弓箭手、騎兵、戰士 FBX的模型 動作更新
-          // roleFBX.forEach((group,groupIndex) => group.forEach((item,index)=> mixerObjectUpdate((groupIndex,item,index));
-          // 弓箭手、騎兵、戰士 FBX的模型 動作更新
+
+
+          // FBX 模型 動作更新
           mixerObject.forEach((group) => group.forEach(mixerObjectUpdate));
           function mixerObjectUpdate(object,index) {
-            // console.log(object);
             if (object) {
               object.update(0.02);
-              // console.log(object);
+              // 看的見時才做 move
               if (object._root.visible) moveObj(time);
             }
           }
-          // if ( roleMTLOBJ[0] ) moveObj(time);
+
+
+
         }
 
         renderer.render(scene,camera);
         requestAnimationFrame(render);
       }
 
-
-      // console.log(renderer.autoClearColor);
-      let lightSpot = false;
+      // 互動控制處理
+      // 燈光控制
+      let lightSpot = false; 
       const lightBtn = document.querySelector('.js-lights-toggle');
-      // lightBtn.classList.toggle('lights-toggle');
       lightBtn.addEventListener('click',() => {
-        const color = [0,0,0,];
-        const rgbaCSSColor = `rgb(${color.join(',')})`
         lightSpot = !lightSpot;
         if (lightSpot) {
-          // scene.background = new THREE.Color('black');
-          // scene.background = new THREE.Color(rgbaCSSColor) 
-          // renderer.autoClearColor = false;
-          // groundPlaneFun(1,true)
           backgroundFun(bgImage[1]);
           scene.children[0].material.opacity = 1;
         } else {
-          // scene.background; 
-          // groundPlaneFun(0.3,true);
           scene.children[0].material.opacity = 0.3;
           backgroundFun(bgImage[0]);
         }
-
-        // lightSpot ? scene.background = new THREE.Color(rgbaCSSColor) : backgrounLightFun();
-        // console.log(renderer.autoClearColor, lightSpot);
-        // console.log(scene.background );
       });
 
-      let roleFBXAction = Array(roleFBX.length).fill(Array(roleFBX[0].length).fill(null));
-      let roleFBXScene = Array(roleFBX.length).fill(Array(roleFBX[0].length).fill(null));
-      let stillOBJ = [];
-      // roleFBX.forEach((group, groupIndex) => group.forEach((item, index)=> console.log('p',groupIndex,index,roleFBXAction[groupIndex][index])));
+      // 動畫演示開始按鍵 控制
       const startBtn = document.querySelector('.js-camera-toggle');
+      let isStart = false; 
       startBtn.addEventListener('click',() => {
-
-        roleFBX.forEach((group,groupIndex) => group.forEach((item,index) => mixerObjectPlay(groupIndex,item,index)));
-        // mixerObject.forEach((group) => group.forEach(mixerObjectPlay));  
-        // 弓箭手、騎兵、戰士 FBX的模型 動作播放
-        // mixerObject.forEach((group) => group.forEach(mixerObjectUpdate));
-        // roleFBX.forEach((group, groupIndex) => group.forEach((item, index)=> console.log('p',groupIndex,index,roleFBXAction[groupIndex][index])));
-        // mixerObject.forEach((group, groupIndex) => group.forEach((item, index)=> console.log('x',groupIndex,index,mixerObject[groupIndex][index].name)));
-
-        function mixerObjectPlay(groupIndex,object,index) {
-          // roleFBXAction[groupIndex, index] = scene.getObjectByName(object.name);
-          roleFBXScene[groupIndex][index] = scene.getObjectByName(object.name);
-          roleFBXScene[groupIndex][index].visible = true;
-          // roleFBXAction[groupIndex][index] = mixerObject[groupIndex][index].clipAction(scene.getObjectByName(object.name).animations[0]);
-          roleFBXAction[groupIndex][index] = mixerObject[groupIndex][index].clipAction(roleFBXScene[groupIndex][index].animations[0]);
-          roleFBXAction[groupIndex][index].play();
-          // console.log('xxx',roleFBXAction[groupIndex][index], mixerObject[groupIndex][index]._root.position);
-        }
-
-
+        isStart = !isStart; 
+        if (isSound) musicPlay();
+        // MTLOBJ 靜態模型控制
         roleMTLOBJ.forEach(setstillOBJ);
+        // FBX的模型 動作 控制
+        roleFBX.forEach((group,groupIndex) => group.forEach((item,index) => mixerObjectPlay(groupIndex,item,index)));
+
+        // MTLOBJ 靜態模型控制處理
         function setstillOBJ(object,index) {
           stillOBJ[index] = scene.getObjectByName(object.name);
-          stillOBJ[index].visible = false;
-          // console.log('yyy',stillOBJ[index].name);
-          // console.log( stillOBJ[index]);
+          stillOBJ[index].visible = !isStart;
         }
 
-
+        // FBX的模型 動作 控制處理
+        function mixerObjectPlay(groupIndex,object,index) {
+          roleFBXScene[groupIndex][index] = scene.getObjectByName(object.name);
+          let FBXS = roleFBXScene[groupIndex][index]
+          FBXS.visible = isStart;
+          roleFBXAction[groupIndex][index] = mixerObject[groupIndex][index].clipAction( FBXS .animations[0] );
+          isStart ? roleFBXAction[groupIndex][index].play() : roleFBXAction[groupIndex][index].stop()
+        }
       })
 
-
-      // create an AudioListener and add it to the camera
+      // 音效播放控制 => create an AudioListener and add it to the camera
       const listener = new THREE.AudioListener();
-      camera.add(listener);
-
       // create a global audio source
       const sound = new THREE.Audio(listener);
-
       // load a sound and set it as the Audio object's buffer
       const audioLoader = new THREE.AudioLoader();
-      audioLoader.load('sounds/Piano-Sonata-14-Moonlight.mp3',function (buffer) {
-        sound.setBuffer(buffer);
-        sound.setLoop(true);
-        sound.setVolume(0.5);
-        // sound.play();
-      });
+      camera.add(listener);
+
+      let isSound = false; 
+      const soundBtn = document.querySelector('.js-sound-toggle');
+      soundBtn.addEventListener('click',() => {
+        isSound = !isSound; 
+        musicPlay();
+        // let music = './sounds/Piano-Sonata-14-Moonlightxx.mp3';
+        // isStart ?  music = './sounds/Symphony-5.mp3' : './sounds/Piano-Sonata-14-Moonlightxx.mp3';
+        // audioLoader.load(music,function (buffer) {
+        //   sound.setBuffer(buffer);
+        //   sound.setLoop(true);
+        //   sound.setVolume(0.5);
+        //   if (isSound) {
+        //      sound.play();
+        //      soundBtn.classList.add('disabled');
+        //   } else {
+        //     sound.stop();
+        //     soundBtn.classList.remove('disabled');
+        //   };
+        // });
+      })
+
+      function musicPlay() {
+        let music = './sounds/Piano-Sonata-14-Moonlightxx.mp3';
+        isStart ?  music = './sounds/Symphony-5.mp3' : './sounds/Piano-Sonata-14-Moonlightxx.mp3';
+        console.log(music,sound.isPlaying);
+        if (sound.isPlaying) sound.stop();
+        audioLoader.load(music,function (buffer) {
+          sound.setBuffer(buffer);
+          sound.setLoop(true);
+          sound.setVolume(0.5);
+          if (isSound) {
+             sound.play();
+             soundBtn.classList.add('disabled');
+          } else {
+            sound.stop();
+            soundBtn.classList.remove('disabled');
+          };
+        });
+      }
     }
     main();
 
