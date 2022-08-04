@@ -584,7 +584,7 @@
              sound.play();  
              soundBtn.classList.remove('disabled');
           } else {
-            sound.stop(); 
+            if (sound.isPlaying)  sound.stop(); 
             soundBtn.classList.add('disabled');
           };
         });
