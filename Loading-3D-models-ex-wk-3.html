@@ -371,7 +371,9 @@
       // 3D 角色 加入 弓箭手、騎兵、戰士 MTL 模型
       function loaderMTLOBJModel(role) {
         const mtlLoader = new MTLLoader();
-        mtlLoader.load(role.pathMTL,(mtl) => {
+        let x = role.pathMTL;
+        let y = role.pathOBJ;
+        mtlLoader.load(x,(mtl) => {
           mtl.preload();
           const objLoader = new OBJLoader();
           objLoader.setMaterials(mtl);
