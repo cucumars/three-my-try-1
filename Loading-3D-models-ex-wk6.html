@@ -380,9 +380,9 @@
       // 下面的就是通過getPoint(50)返回曲線上 
       // 50等分點的坐標，然後通過這些坐標構建一條曲線。
       const curve = new THREE.SplineCurve([
-        new THREE.Vector2(10,-12),
+        new THREE.Vector2(8,-12),
         // new THREE.Vector2(12,5),
-        new THREE.Vector2(10,7),
+        new THREE.Vector2(8,4),
       ]);
 
         // 地板軌道樣條設置
@@ -407,7 +407,7 @@
         roleFBX.forEach((group,groupIndex) => group.forEach((item,index) => mixerObjectMove(groupIndex,item,index)));
         function mixerObjectMove(groupIndex,object,index) {
           let x = scene.getObjectByName(roleFBX[groupIndex][index].name);
-          x.position.set(roleFBX[groupIndex][index].position[0]+2,roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
+          x.position.set(roleFBX[groupIndex][index].position[0]+2.5,roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y-1.5);
           //保留研究 => 為何這樣會有問題, 是否因為陣列宣告方式導致 => 需要再研究
           // roleFBXScene[groupIndex][index].position.set(roleFBX[groupIndex][index].position[0],roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
           // 也可以這樣寫 保留
@@ -485,6 +485,7 @@
             camera.updateProjectionMatrix();
           });
 
+          
           // cycle through our cameras at render time.
           const camera = cameras[time * .25 * 10 % cameras.length | 0]; 
 
