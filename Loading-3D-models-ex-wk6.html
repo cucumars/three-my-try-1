@@ -150,123 +150,17 @@
         let resultMTLOBJ = await responseMTLOBJ.json(); // read response body and parse as JSON
         let responseFBX = await fetch( urlFBX );
         let resultFBX = await responseFBX.json(); // read response body and parse as JSON
-        // console.log(resultMTLOBJ,);
         // 主程式
         main( resultMTLOBJ,  resultFBX );
     }
 
     // 主程式
     function main( resultMTLOBJ,  resultFBX ) {  
-      // 載入 加入 弓箭手、騎兵、戰士 OBJ MTL 模型資料
+      // 載入 OBJ MTL 模型資料
       let roleMTLOBJ = [ ...resultMTLOBJ ];
+       // 載入 FBX的模型
       let roleFBX = [ ...resultFBX ]
- 
-      // 載入 加入 弓箭手、騎兵、戰士 OBJ MTL 模型資料
-      // let roleMTLOBJ = [
-      // {
-      //     pathMTL: './3DModel/OBJ/弓箭手.mtl',
-      //     pathOBJ: './3DModel/OBJ/弓箭手.obj',
-      //     name: 'Archer_OBJ_still0',
-      //     position: [16,3.2,15],
-      //     scale: [0.05,0.05,0.05],
-      //   },
-      //   {
-      //     pathMTL: './3DModel/OBJ/戰士.mtl',
-      //     pathOBJ: './3DModel/OBJ/戰士.obj',
-      //     name: 'Warrior_OBJ_still0',
-      //     position: [6,3.31,15],
-      //     scale: [0.05,0.05,0.05],
-      //   },
-      //   {
-      //     pathMTL: './3DModel/OBJ/騎兵.mtl',
-      //     pathOBJ: './3DModel/OBJ/騎兵.obj',
-      //     name: 'Cavalry_OBJ_stillx',
-      //     position: [15,5.6,15],
-      //     scale: [0.05,0.05,0.05],
-      //   },
-      //   {
-      //     pathMTL: './3DModel/OBJ/弓箭手.mtl',
-      //     pathOBJ: './3DModel/OBJ/弓箭手.obj',
-      //     name: 'Archer_OBJ_still',
-      //     position: [16,3.2,10],
-      //     scale: [0.05,0.05,0.05],
-      //   },
-      //   {
-      //     pathMTL: './3DModel/OBJ/戰士.mtl',
-      //     pathOBJ: './3DModel/OBJ/戰士.obj',
-      //     name: 'Warrior_OBJ_still',
-      //     position: [6,3.31,10],
-      //     scale: [0.05,0.05,0.05],
-      //   },
-      //   {
-      //     pathMTL: './3DModel/OBJ/騎兵.mtl',
-      //     pathOBJ: './3DModel/OBJ/騎兵.obj',
-      //     name: 'Cavalry_OBJ_still',
-      //     position: [20,5.6,15],
-      //     scale: [0.05,0.05,0.05],
-      //   },
-      // ];
 
-      // 加入 弓箭手、騎兵、戰士 FBX的模型
-      // let roleFBX = [
-      //   [
-      //     {
-      //       path: './3DModel/FBX/弓箭手-移動.fbx',
-      //       name: 'Archer_FBX_movex',
-      //       position: [4,3.2,10],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //     {
-      //       path: './3DModel/FBX/弓箭手-攻擊.fbx',
-      //       name: 'Archer_FBX_attackx',
-      //       position: [5,3.2,15],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //   ],
-      //   [
-      //     {
-      //       path: './3DModel/FBX/弓箭手-移動.fbx',
-      //       name: 'Archer_FBX_move',
-      //       position: [16,3.2,0],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //     {
-      //       path: './3DModel/FBX/弓箭手-攻擊.fbx',
-      //       name: 'Archer_FBX_attack',
-      //       position: [16,3.2,5],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //   ],
-      //   [
-      //     {
-      //       path: './3DModel/FBX/戰士-移動.fbx',
-      //       name: 'Warrior_FBX_move',
-      //       position: [6,3.31,0],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //     {
-      //       path: './3DModel/FBX/戰士-攻擊.fbx',
-      //       name: 'Warrior_FBX_attack',
-      //       position: [6,3.31,5],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //   ],
-      //   [
-      //     {
-      //       path: './3DModel/FBX/騎兵-移動.fbx',
-      //       name: 'Cavalry_FBX_move',
-      //       position: [20,5.6,0],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //     {
-      //       path: './3DModel/FBX/騎兵-攻擊.fbx',
-      //       name: 'Cavalry_FBX_attack',
-      //       position: [20,5.6,0],
-      //       scale: [0.05,0.05,0.05],
-      //     },
-      //   ],
-      // ];
-      console.log(1);
       // 背景圖片
       const bgImage = [
         './images/bg-3-deep.jpg',
@@ -284,14 +178,14 @@
       let roleFBXScene = Array(roleFBX.length).fill(Array(roleFBX[0].length).fill(null));
       // MTLOBJ 靜態模型
       let stillOBJ = [];
-
-
+      // 主要顯示區塊
       const canvas = document.querySelector('#c');
 
       // 場景設置
       const scene = new THREE.Scene();
       scene.rotation.x = Math.PI * -0.35;
 
+      // Renderer 設置 
       // 我們需要告訴WebGLRenderer使用alpha，所以我們沒有繪製任何東西的地方是透明的。
       const renderer = new THREE.WebGLRenderer({
         canvas,
@@ -303,14 +197,13 @@
       renderer.shadowMap.enabled = true;
       document.body.appendChild(renderer.domElement);
 
-
       // 基本相機設置
-      const fov = 75;
-      const aspect = window.innerWidth / window.innerHeight;  // the canvas default 2
-      const near = 0.1;
-      const far = 100;
-      const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
-      camera.position.set( 0, 32, 2 );
+      // const fov = 75;
+      // const aspect = window.innerWidth / window.innerHeight;  // the canvas default 2
+      // const near = 0.1;
+      // const far = 100;
+      // const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
+      // camera.position.set( 0, 32, 2 );
 
       // 相機設置公用函式
       function makeCamera(fov = 75) {
@@ -319,16 +212,15 @@
         const zFar = 100;
         return new THREE.PerspectiveCamera(fov,aspect,zNear,zFar);
       }
+       // 基本相機設置
+      const camera =  makeCamera();
+      camera.position.set( 0, 32, 2 );
 
-
-
-
-      // 環繞功能
+      // 滑鼠環繞功能
       // OrbitControls讓用戶圍繞某個點旋轉或環繞相機 =>(軌道控制 OrbitControls)允許相機圍繞目標軌道運行。
       const controls = new OrbitControls(camera,canvas);
       controls.target.set(0,25,0);
       controls.update();
-
 
       // 背景處理
       backgroundFun(bgImage[0]); 
@@ -402,9 +294,6 @@
         // light.target.position.set(0,0,0);
         scene.add(light);
 
-        // const helper = new THREE.HemisphereLightHelper(light);
-        // scene.add(helper);
-        // helper.update();
       }
 
       // DirectionalLight
@@ -417,11 +306,7 @@
         light.target.position.set(0,5,0);
         light.angle = Math.PI / 4;
         scene.add(light);
-        // scene.add(light.target);
 
-        // const helper = new THREE.DirectionalLightHelper(light);
-        // scene.add(helper);
-        // helper.update();
       }
 
       // SpotLight
@@ -522,7 +407,7 @@
         roleFBX.forEach((group,groupIndex) => group.forEach((item,index) => mixerObjectMove(groupIndex,item,index)));
         function mixerObjectMove(groupIndex,object,index) {
           let x = scene.getObjectByName(roleFBX[groupIndex][index].name);
-          x.position.set(roleFBX[groupIndex][index].position[0],roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
+          x.position.set(roleFBX[groupIndex][index].position[0]+2,roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
           //保留研究 => 為何這樣會有問題, 是否因為陣列宣告方式導致 => 需要再研究
           // roleFBXScene[groupIndex][index].position.set(roleFBX[groupIndex][index].position[0],roleFBX[groupIndex][index].position[1],roleMTLOBJ0Position.y);
           // 也可以這樣寫 保留
@@ -566,14 +451,10 @@
       upCamera.rotation.z = Math.PI * 0.2;
       // upCamera.rotation.y = Math.PI * 0.2;
 
-
       const dynamicCamera = makeCamera();
       dynamicCamera.position.set( 0, 5, 30 );
       scene.add(dynamicCamera);
       dynamicCamera.lookAt(0,10,0);
-      // dynamicCamera.rotation.x = Math.PI * -0.35;
-      // dynamicCamera.rotation.z = Math.PI * 0.5;
-      // dynamicCamera.rotation.y = Math.PI * 0.5;
 
 
       // 對於相機，我們在初始化時設置了一個包含所有 4 個相機的數組並帶有描述。
@@ -581,7 +462,7 @@
         { cam: camera, desc: '前視相機', },
         { cam: backCamera, desc: '後視相機', },
         { cam: upCamera, desc: ' 側視相機',},
-        // { cam: dynamicCamera, desc: '動態相機',},
+        { cam: dynamicCamera, desc: '動態相機',},
       ];
 
       console.log(cameras);
@@ -607,28 +488,12 @@
           // cycle through our cameras at render time.
           const camera = cameras[time * .25 * 10 % cameras.length | 0]; 
 
-
-          // dynamicCamera.rotation.y = time * 1;          
-          // dynamicCamera.position.x = 30; //-Math.cos(time * 1) * 1; //20; //time * 1;
-          // dynamicCamera.position.y= 5; //-Math.sin(time * 1) * 1;
-          // dynamicCamera.position.z = 0;// time * 2;
-          // dynamicCamera.lookAt(0,5,0);
-          // dynamicCamera.rotation.z = time * 1;
-          console.log();
-          // dynamicCameray = time * 13;
-
-          // controls = new OrbitControls(camera,canvas);
-          // controls.target.set(0,25,0);
-          // controls.update(camera,canvas);
-          // console.log(time * .25 * 10, camera);
           infoElem.textContent = camera.desc;
           renderer.render(scene,camera.cam);
 
-
-          // 旋轉展示
-          scene.rotation.y = time; 
+          // 旋轉展示 => 播放動作時 不旋轉 且重置選轉角度為 0
+          !isStart ?  scene.rotation.y = time : scene.rotation.y = 0;
     
-
           // FBX 模型 動作更新
           mixerObject.forEach((group) => group.forEach(mixerObjectUpdate));
           function mixerObjectUpdate(object,index) {
@@ -702,6 +567,7 @@
 
       })
 
+      //音樂播放
       function musicPlay() {
         let music = './sounds/Piano-Sonata-14-Moonlightxx.mp3';
         isStart ?  music = './sounds/Symphony-5.mp3' : './sounds/Piano-Sonata-14-Moonlightxx.mp3';
