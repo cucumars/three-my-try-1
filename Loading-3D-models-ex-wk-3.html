@@ -372,12 +372,12 @@
       function loaderMTLOBJModel(role) {
         const mtlLoader = new MTLLoader();
         let x = role.pathMTL;
-        let y = role.pathOBJ;
+        let y = role.pathOBJ
         mtlLoader.load(x,(mtl) => {
           mtl.preload();
           const objLoader = new OBJLoader();
           objLoader.setMaterials(mtl);
-          objLoader.load(role.pathOBJ,(object) => {
+          objLoader.load(y,(object) => {
             scene.add(object);
             console.log('object OBJ =>',object);
             object.position.set(...role.position); //一定要copy array 的方式
