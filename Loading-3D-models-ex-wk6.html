@@ -111,7 +111,7 @@
   <div>
     <!-- <div class="main-title">New Renault <span>Espace</span></div> -->
     <div class="lights-toggle js-lights-toggle permanent"></div>
-    <div class="sound-toggle js-sound-toggle permanent show-from-interior"></div>
+    <div class="sound-toggle js-sound-toggle permanent show-from-interior disabled"></div>
     <div class="camera-toggle js-camera-toggle permanent"></div>
     <div class="view-toggle js-view-toggle"></div>
     <!--          <div class="about-block">
@@ -485,10 +485,12 @@
             camera.updateProjectionMatrix();
           });
 
-          
+          let choiceNo = time * .25 * 10 % cameras.length | 0;
+          // isStart  choiceNo = 
           // cycle through our cameras at render time.
-          const camera = cameras[time * .25 * 10 % cameras.length | 0]; 
-
+          let camera = cameras[choiceNo| 0];
+          if  (!isStart) camera = cameras[0];
+          
           infoElem.textContent = camera.desc;
           renderer.render(scene,camera.cam);
 
@@ -579,11 +581,11 @@
           sound.setLoop(true);
           sound.setVolume(0.5);
           if (isSound) {
-             sound.play();
-             soundBtn.classList.add('disabled');
+             sound.play();  
+             soundBtn.classList.remove('disabled');
           } else {
-            sound.stop();
-            soundBtn.classList.remove('disabled');
+            sound.stop(); 
+            soundBtn.classList.add('disabled');
           };
         });
       }
