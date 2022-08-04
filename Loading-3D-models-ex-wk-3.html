@@ -373,10 +373,10 @@
         const mtlLoader = new MTLLoader();
         let x0 = "./3Dmodel/OBJ/戰士.mtl"+"";
         let y0 = "./3Dmodel/OBJ/戰士.obj"+"";
-        // const x = role.pathMTL+"";
-        // const y = role.pathOBJ+"";
-        let x = x0; 
-        let y = y0;
+        let x1 = role.pathMTL;
+        let y1 = role.pathOBJ;
+        let x = x1; 
+        let y = y1;
 
         mtlLoader.load(x,(mtl) => {
           mtl.preload();
