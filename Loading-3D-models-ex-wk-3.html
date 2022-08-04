@@ -371,13 +371,11 @@
       // 3D 角色 加入 弓箭手、騎兵、戰士 MTL 模型
       function loaderMTLOBJModel(role) {
         const mtlLoader = new MTLLoader();
-        let x = './3Dmodel/OBJ/戰士.mtl';
-        let y= './3Dmodel/OBJ/戰士.obj';
-        mtlLoader.load(x,(mtl) => {
+        mtlLoader.load(role.pathMTL,(mtl) => {
           mtl.preload();
           const objLoader = new OBJLoader();
           objLoader.setMaterials(mtl);
-          objLoader.load(y,(object) => {
+          objLoader.load(role.pathOBJ,(object) => {
             scene.add(object);
             console.log('object OBJ =>',object);
             object.position.set(...role.position); //一定要copy array 的方式
