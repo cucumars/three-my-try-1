@@ -574,7 +574,7 @@
       function musicPlay() {
         let music = './sounds/Piano-Sonata-14-Moonlightxx.mp3';
         isStart ?  music = './sounds/Symphony-5.mp3' : './sounds/Piano-Sonata-14-Moonlightxx.mp3';
-        console.log(music,sound.isPlaying);
+        // console.log(music,sound.isPlaying);
         if (sound.isPlaying) sound.stop();
         audioLoader.load(music,function (buffer) {
           sound.setBuffer(buffer);
