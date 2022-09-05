@@ -83,6 +83,7 @@
 				const canvas = renderer.domElement;
 				const width = canvas.clientWidth;
 				const height = canvas.clientHeight;
+				// 檢查渲染器的畫布是否已經不是它正在顯示的大小，如果是，則設置它的大小。
 				const needResize = canvas.width !== width || canvas.height !== height;
 				if (needResize) {
 					renderer.setSize(width,height,false);

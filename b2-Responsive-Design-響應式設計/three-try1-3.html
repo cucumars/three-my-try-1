@@ -41,9 +41,9 @@
 			const fov = 75;
 			const aspect = 2;  // the canvas default
 			const near = 0.1;
-			const far = 2;
+			const far = 5;
 			const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
-			camera.position.z = 2;
+			camera.position.z = 5;
 
 			const scene = new THREE.Scene();
 
@@ -80,6 +80,7 @@
 			function render(time) {
 				time *= 0.001;
 
+				// 決拉伸問題 => 我們需要將相機的縱橫比設置為畫布顯示尺寸的縱橫比
 				const canvas = renderer.domElement;
 				camera.aspect = canvas.clientWidth / canvas.clientHeight;
 				camera.updateProjectionMatrix();
