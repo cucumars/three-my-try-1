@@ -52,7 +52,9 @@
 			const boxHeight = 1;
 			const boxDepth = 1;
 			const geometry = new THREE.BoxGeometry(boxWidth,boxHeight,boxDepth);
-			// The MeshBasicMaterial is not affected by lights. Let's change it to a MeshPhongMaterial which is affected by lights.
+			// The MeshBasicMaterial is not affected by lights.
+			// Let's change it to a MeshPhongMaterial which is affected by lights.
+			// 我們還需要改變材料。MeshBasicMaterial不受燈光影響。讓我們將其更改MeshPhongMaterial為受燈光影響的
 			const material = new THREE.MeshPhongMaterial({color: 0x44aa88});  // greenish blue
 			// const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });  // greenish blue
 
