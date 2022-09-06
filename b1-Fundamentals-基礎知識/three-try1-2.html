@@ -33,7 +33,7 @@
 			// const renderer = new THREE.WebGLRenderer({ canvas });
 			const renderer = new THREE.WebGLRenderer();
 			// 渲染我們的應用程序的大小
-			renderer.setSize(window.innerWidth,window.innerHeight);
+			renderer.setSize(window.innerWidth, window.innerHeight);
 			// 還可以提供setSize較小的值，例如和，這將使應用程序以四分之一大小呈現。window.innerWidth/2window.innerHeight/2
 			document.body.appendChild(renderer.domElement);
 
@@ -42,6 +42,9 @@
 			const near = 0.1;
 			const far = 5;
 			const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
+			// const width = 10;
+			// const height = 10
+			// const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 0.1, 1000 );
 			// const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1,1000);
 			camera.position.z = 5;
 
@@ -51,6 +54,7 @@
 			{
 				const color = 0xFFFFFF;
 				const intensity = 1;
+				// DirectionalLight（顏色：整數，強度：浮點數）
 				const light = new THREE.DirectionalLight(color,intensity);
 				light.position.set(-1,2,4);
 				scene.add(light);
