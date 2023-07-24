@@ -17,23 +17,32 @@
 <body>
 	<script src="https://threejs.org/build/three.js"></script>
 	<script>
+		// 為了能夠用three.js實際顯示任何東西，我們需要三樣東西：場景、相機和渲染器
 		const scene = new THREE.Scene();
-		//使用透視相機(field of view=>(FOV=>視野),aspect ratio=>縱橫比,near plane,far plane=>距離相機比值更遠far或更近near的物件不會被渲染)
+		//使用透視相機(field of view => (FOV=>視野),
+		// aspect ratio =>縱橫比,
+		// near plane, far plane=>距離相機比值更遠far或更近near的物件不會被渲染)
 		const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1,1000);
 
 		const renderer = new THREE.WebGLRenderer();
 		// 渲染我們的應用程序的大小
 		renderer.setSize(window.innerWidth,window.innerHeight);
 		// 還可以提供setSize較小的值，例如和，這將使應用程序以四分之一大小呈現。window.innerWidth/2window.innerHeight/2
+		// 將renderer元素添加到 HTML 中
 		document.body.appendChild(renderer.domElement);
 
+		// 創建一個立方體
+		// 幾何體(圖) => BoxGeometry
+		// 材質 => MeshBasicMaterial
+		// 網格 => Mesh => 採用幾何體(圖) 並應用材質
 		const geometry = new THREE.BoxGeometry(1,1,1);
 		const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 		const cube = new THREE.Mesh(geometry,material);
+		// the thing we add will be added to the coordinates (0,0,0).
 		scene.add(cube);
 
-
 		camera.position.z = 5;
+
 		function render(time) {
 			time *= 0.001;  // 將時間轉換為秒
 
@@ -45,8 +54,7 @@
 			requestAnimationFrame(render);
 		}
 		requestAnimationFrame(render);
-
-
+	
 	</script>
 </body>
 

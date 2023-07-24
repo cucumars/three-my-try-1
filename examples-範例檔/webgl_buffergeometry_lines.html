@@ -1,0 +1,178 @@
+s (108 sloc)  3.66 KB
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - buffergeometry - lines</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
+
+		<div id="container"></div>
+		<div id="info"><a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - buffergeometry - lines</div>
+
+		<!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+          "three": "https://unpkg.com/three@0.132.2/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.132.2/examples/jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+      // stats.js 主要用於檢測動畫運行時的幀數
+			import Stats from 'three/addons/libs/stats.module.js';
+
+			let container, stats, clock;
+
+			let camera, scene, renderer;
+
+			let line;
+
+			const segments = 10000;
+			const r = 800;
+			let t = 0;
+
+			init();
+			animate();
+
+			function init() {
+
+				container = document.getElementById( 'container' );
+
+				//
+
+				camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 1, 4000 );
+				camera.position.z = 2750;
+
+				scene = new THREE.Scene();
+        // Object for keeping track of time 
+				clock = new THREE.Clock();
+
+				const geometry = new THREE.BufferGeometry();
+        // 定義頂點著色。
+				const material = new THREE.LineBasicMaterial( { vertexColors: true } );
+
+				const positions = [];
+				const colors = [];
+
+				for ( let i = 0; i < segments; i ++ ) {
+
+					const x = Math.random() * r - r / 2;
+					const y = Math.random() * r - r / 2;
+					const z = Math.random() * r - r / 2;
+
+					// positions
+
+					positions.push( x, y, z );
+
+					// colors
+
+					colors.push( ( x / r ) + 0.5 );
+					colors.push( ( y / r ) + 0.5 );
+					colors.push( ( z / r ) + 0.5 );
+
+				}
+
+				geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+				geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+        // THREE.js採用的是通過變形的頂點來定義變形物體
+
+				generateMorphTargets( geometry );
+        // 計算邊界
+				geometry.computeBoundingSphere();
+
+				line = new THREE.Line( geometry, material );
+				scene.add( line );
+
+				//
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.outputEncoding = THREE.sRGBEncoding;
+
+				container.appendChild( renderer.domElement );
+
+				//
+
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+				stats.update();
+
+			}
+
+			function render() {
+        // 獲取自設置 .oldTime 以來經過的秒數, 並將 .oldTime 設置為當前時間。
+				const delta = clock.getDelta();
+        // 獲取自時鐘開始以來經過的秒數，並將.oldTime設置為當前時間
+				const time = clock.getElapsedTime();
+
+				line.rotation.x = time * 0.25;
+				line.rotation.y = time * 0.5;
+
+				t += delta * 0.5;
+				line.morphTargetInfluences[ 0 ] = Math.abs( Math.sin( t ) );
+        // line.morphTargetInfluences[ 0 ] =  Math.sin( t );
+				renderer.render( scene, camera );
+
+			}
+
+			function generateMorphTargets( geometry ) {
+
+				const data = [];
+
+				for ( let i = 0; i < segments; i ++ ) {
+
+					const x = Math.random() * r - r / 2;
+					const y = Math.random() * r - r / 2;
+					const z = Math.random() * r - r / 2;
+
+					data.push( x, y, z );
+
+				}
+
+				const morphTarget = new THREE.Float32BufferAttribute( data, 3 );
+				morphTarget.name = 'target1';
+        // morph 通過直接使模型的每個點位置發生改變，適用於細節變化的時候
+				geometry.morphAttributes.position = [ morphTarget ];
+
+			}
+
+		</script>
+
+	</body>
+</html>
